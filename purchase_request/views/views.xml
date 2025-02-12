@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--    Tree-->
+    <record id="purchase_request_tree_view" model="ir.ui.view">
+        <field name="name">purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence_id"/>
+                <field name="employee_name"/>
+                <field name="designation"/>
+                <field name="date_of_request"/>
+                <field name="department"/>
+                <field name="reference_number"/>
+                <field name="status" readonly="1" decoration-primary="status == 'draft'"
+                       decoration-warning="status == 'request'" decoration-success="status == 'approve'"
+                       widget="badge"/>
+            </tree>
+        </field>
+    </record>
+    <!--    Form-->
+    <record id="purchase_request_form_view" model="ir.ui.view">
+        <field name="name">purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_request" string="Request" invisible="status != 'draft'" type="object"/>
+                    <button name="action_approve" string="Approve" invisible="status != 'request'" type="object"/>
+                    <button name="action_reset" string="Reset" invisible="status != 'approve'" type="object"/>
+                    <button name="action_cancel" string="Cancel" type="object"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,request,approve"/>
+                </header>
+                <sheet>
+                    <div>
+                        <field name="sequence_id" readonly="1"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_name" readonly="status in ['approve']" required="True"/>
+                            <field name="designation" readonly="1" force_save="1"/>
+                            <field name="department" readonly="1" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="date_of_request" class="oe_right" readonly="status in ['approve']"/>
+                            <field name="reference_number" readonly="status in ['approve']"/>
+                        </group>
+                    </group>
+                    <!--                    Table here-->
+                    <notebook>
+                        <page>
+                            <field name="table_id">
+                                <tree editable="bottom">
+                                    <field name="product_name" readonly="status == 'approve'" required="True"/>
+                                    <field name="description" readonly="status == 'approve'"/>
+                                    <field name="unit_of_measure" readonly="status == 'approve'"/>
+                                    <field name="quantity" readonly="status == 'approve'"/>
+                                    <field name="approved_quantity" readonly="status == 'approve'"/>
+                                    <field name="status" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group>
+                        <field name="remarks"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'open_attachments': True}"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <!--    Search View-->
+    <record id="purchase_request_search_view" model="ir.ui.view">
+        <field name="name">Search View</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <search string="Search Purchase Request">
+<!--                Filter by string-->
+                <filter string="Draft" name="Draft" domain="[('status', '=', 'draft')]"/>
+                <filter string="Request" name="Request" domain="[('status', '=', 'request')]"/>
+                <filter string="Approve" name="Approve" domain="[('status', '=', 'approve')]"/>
+<!--                Use group tag to apply filters with group by-->
+                <group expand="0" string="Group By">
+                     <filter string="Employee Name" name="Employee Name" domain="[]" context="{'group_by': 'employee_name'}"/>
+                     <filter string="Department" name="Department" domain="[]" context="{'group_by': 'department'}"/>
+                     <filter string="Date of Request" name="Date of Request" domain="[]" context="{'group_by': 'date_of_request'}"/>
+                </group>
+<!--                Search for the field individually-->
+                <field name="employee_name"/>
+                <field name="designation"/>
+                <field name="date_of_request"/>
+                <field name="department"/>
+                <field name="reference_number"/>
+            </search>
+        </field>
+    </record>
+    <!--    Action Second-->
+    <record id="action_open_purchase_request" model="ir.actions.act_window">
+        <field name="name">Purchase Request</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There are no records present, please create a record so it can be displayed.
+            </p>
+        </field>
+    </record>
+    <!--    First Menu-->
+    <menuitem name="Purchase Request" id="main_menu_purchase_request_id"/>
+    <menuitem name="Placeholder" action="action_open_purchase_request" id="sub_menu_purchase_request_id"
+              parent="main_menu_purchase_request_id">
+    </menuitem>
+</odoo>
+
+<!--Python Function Naming Standards-->
+<!--CRUD-->
+<!--C--><!--Create-->
+<!--R--><!--Read-->
+<!--U--><!--Update-->
+<!--D--><!--Delete-->
